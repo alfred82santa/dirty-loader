@@ -1,0 +1,16 @@
+language: python
+python:
+  - "3.3"
+  - "3.4"
+# command to install dependencies
+install:
+  - pip install -r requirements-test.txt
+  - pip install coveralls
+# command to run tests
+script:
+  - flake8 dirty_loader
+  - flake8 tests
+  - nosetests --with-coverage -d --cover-package=dirty_loader
+
+after_success:
+  - coveralls --rcfile=.coveragerc
