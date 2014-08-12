@@ -68,6 +68,7 @@ class Loader():
     def get_registered_modules(self):
         """
         Return registered modules.
+
         :return: list of registered modules.
         :rtype: list
         """
@@ -77,6 +78,7 @@ class Loader():
     def load_class(self, classname):
         """
         Loads a class looking for it in each module registered.
+
         :param classname: Class name you want to load.
         :type classname: str
         :return: Class object
@@ -265,6 +267,7 @@ class LoaderNamespace(Loader):
     def get_registered_modules(self):
         """
         Return registered modules.
+
         :return: list of registered modules.
         :rtype: list
         """
@@ -273,6 +276,7 @@ class LoaderNamespace(Loader):
     def get_registered_namespaces(self):
         """
         Return registered namespaces.
+
         :return: Dict with namespaces as key and modules as value.
         :rtype: OrderedDict
         """

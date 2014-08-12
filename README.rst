@@ -6,12 +6,28 @@
 .. |coverall-master| image:: https://coveralls.io/repos/alfred82santa/dirty-loader/badge.png?branch=master
     :target: https://coveralls.io/r/alfred82santa/dirty-loader?branch=master
 
-============
 dirty-loader
 ============
 
 Easy to use loader library.
 
+-----------
+Instalation
+-----------
+
+.. code-block:: bash
+
+    $ pip install dirty-loader
+
+-------------
+Documentation
+-------------
+
+http://dirty-loader.readthedocs.org
+
+------------
+Main loaders
+------------
 
 Loader
 ------
