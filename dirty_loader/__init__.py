@@ -221,7 +221,8 @@ class LoaderNamespace(Loader):
         :param namespace: Namespace tag. If it is None module will be used as namespace tag
         :type namespace: str
         """
-        namespace = namespace if namespace is not None else module.__name__
+        namespace = namespace if namespace is not None else module \
+            if isinstance(module, str) else module.__name__
         self.register_namespace(namespace, module)
 
     def register_namespace(self, namespace, module):
