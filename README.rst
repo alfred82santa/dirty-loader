@@ -22,6 +22,7 @@ it will try to load it for each module until it find one.
 Example:
 
 .. code-block:: python
+
     from dirty_loader import Loader
 
     loader = Loader()
@@ -52,6 +53,7 @@ LoaderReversed
 It works in same way of Loader but it revers the sort when try to load a class.
 
 .. code-block:: python
+
     from dirty_loader import LoaderReversed
 
     loader = LoaderReversed()
@@ -75,6 +77,7 @@ module associated. You could use the regular Loader way to load a class or you c
 specify the namespace you would like to use.
 
 .. code-block:: python
+
     from dirty_loader import LoaderNamespace
 
     loader = LoaderNamespace()
