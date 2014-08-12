@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from unittest.case import TestCase
-from dirty_loader import Loader, NoRegistered, AlreadyRegistered, LoaderReversed, LoaderNamespace, \
+from dirty_loader import Loader, NoRegisteredError, AlreadyRegisteredError, LoaderReversed, LoaderNamespace, \
     LoaderNamespaceReversed, LoaderCached, LoaderReversedCached, LoaderNamespaceReversedCached, LoaderNamespaceCached
 
 __author__ = 'alfred'
@@ -82,13 +82,13 @@ class LoaderTest(TestCase):
         self.assertEquals(klass, FakeClass3)
 
     def test_unregister_fail(self):
-        with self.assertRaises(NoRegistered):
+        with self.assertRaises(NoRegisteredError):
             self.loader.unregister_module('tests.fake.namespace2')
 
     def test_register_fail(self):
         self.loader.register_module('tests.fake.namespace1')
         self.loader.register_module('tests.fake.namespace2', idx=0)
-        with self.assertRaises(AlreadyRegistered):
+        with self.assertRaises(AlreadyRegisteredError):
             self.loader.register_module('tests.fake.namespace1')
 
     def test_load_fail(self):
@@ -294,23 +294,23 @@ class LoaderNamespaceTest(TestCase):
         self.assertEquals(klass, FakeClass3)
 
     def test_unregister_module_fail(self):
-        with self.assertRaises(NoRegistered):
+        with self.assertRaises(NoRegisteredError):
             self.loader.unregister_module('tests.fake.namespace2')
 
     def test_unregister_namespace_fail(self):
-        with self.assertRaises(NoRegistered):
+        with self.assertRaises(NoRegisteredError):
             self.loader.unregister_namespace('fake2')
 
     def test_register_module_fail(self):
         self.loader.register_module('tests.fake.namespace1')
         self.loader.register_module('tests.fake.namespace2')
-        with self.assertRaises(AlreadyRegistered):
+        with self.assertRaises(AlreadyRegisteredError):
             self.loader.register_module('tests.fake.namespace1')
 
     def test_register_namespace_fail(self):
         self.loader.register_namespace('fake1', 'tests.fake.namespace1')
         self.loader.register_namespace('fake2', 'tests.fake.namespace2')
-        with self.assertRaises(AlreadyRegistered):
+        with self.assertRaises(AlreadyRegisteredError):
             self.loader.register_namespace('fake1', 'tests.fake.namespace1')
 
     def test_load_fail_1(self):
@@ -327,7 +327,7 @@ class LoaderNamespaceTest(TestCase):
     def test_load_fail_3(self):
         self.loader.register_namespace('fake1', 'tests.fake.namespace1')
         self.loader.register_namespace('fake2', 'tests.fake.namespace2')
-        with self.assertRaises(NoRegistered):
+        with self.assertRaises(NoRegisteredError):
             self.loader.load_class('fake3:FakeClass3')
 
     def test_factory(self):
