@@ -10,8 +10,11 @@
 dirty-loader
 ============
 
-
 Easy to use loader library.
+
+.. toctree::
+    :maxdepth: 2
+
 
 Loader
 ------
@@ -19,7 +22,7 @@ Loader
 With Loader you could register sorted python modules. When you ask for a class
 it will try to load it for each module until it find one.
 
-Example:
+**Example**:
 
 .. code-block:: python
 
@@ -52,6 +55,8 @@ LoaderReversed
 
 It works in same way of Loader but it revers the sort when try to load a class.
 
+**Example**:
+
 .. code-block:: python
 
     from dirty_loader import LoaderReversed
@@ -75,6 +80,8 @@ With LoaderNamespace you could register sorted namespaces. When you ask for a cl
 it will try to load it for each namespace until it find one. Each namespace has a python
 module associated. You could use the regular Loader way to load a class or you could
 specify the namespace you would like to use.
+
+**Example**:
 
 .. code-block:: python
 
