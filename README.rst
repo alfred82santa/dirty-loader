@@ -1,8 +1,14 @@
+|travis-master| |coverall-master|
+
+.. |travis-master| image:: https://travis-ci.org/alfred82santa/dirty-loader.svg?branch=master
+    :target: https://travis-ci.org/alfred82santa/dirty-loader
+
+.. |coverall-master| image:: https://coveralls.io/repos/alfred82santa/dirty-loader/badge.png?branch=master
+    :target: https://coveralls.io/r/alfred82santa/dirty-loader?branch=master
+
 ============
 dirty-loader
 ============
-
-.. image:: https://coveralls.io/repos/alfred82santa/dirty-loader/badge.png :target: https://coveralls.io/r/alfred82santa/dirty-loader
 
 
 Easy to use loader library.
