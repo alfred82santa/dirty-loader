@@ -1,4 +1,4 @@
-|travis-master| |coverall-master|
+|travis-master| |coverall-master| |docs-master|
 
 .. |travis-master| image:: https://travis-ci.org/alfred82santa/dirty-loader.svg?branch=master
     :target: https://travis-ci.org/alfred82santa/dirty-loader
