@@ -5,7 +5,7 @@ setup(
     name='dirty-loader',
     url='https://github.com/alfred82santa/dirty-loader',
     author='alfred82santa',
-    version='0.0.1',
+    version='0.0.2',
     author_email='alfred82santa@gmail.com',
     classifiers=[
         'Intended Audience :: Developers',
