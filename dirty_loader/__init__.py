@@ -1,3 +1,5 @@
+from importlib import import_module
+
 from collections import OrderedDict
 import importlib
 
@@ -16,7 +18,7 @@ class NoRegisteredError(DirtyLoaderException):
     pass
 
 
-class Loader():
+class Loader:
 
     """
     Loader is a class loader. You must register python modules where to look for classes.
@@ -87,19 +89,10 @@ class Loader():
 
         module_list = self._get_module_list()
 
-        submodule = False
-        if '.' in classname:
-            submodule, classname = classname.rsplit('.', 1)
-            submodule = '.' + submodule
         for module in module_list:
             try:
-                if submodule:
-                    try:
-                        module = importlib.import_module(submodule, module.__name__)
-                    except ImportError:
-                        continue
-                return getattr(module, classname)
-            except AttributeError:
+                return import_class(classname, module.__name__)
+            except (AttributeError, ImportError):
                 pass
 
         raise ImportError("Class '{0}' could not be loaded.".format(classname))
@@ -123,7 +116,7 @@ class Loader():
         return klass(*args, **kwargs)
 
 
-class ReversedMixin():
+class ReversedMixin:
 
     def _get_module_list(self):
         return reversed(super(ReversedMixin, self)._get_module_list())
@@ -139,7 +132,7 @@ class LoaderReversed(ReversedMixin, Loader):
     pass
 
 
-class CacheLoaderMixin():
+class CacheLoaderMixin:
 
     def __init__(self, *args, **kwargs):
         super(CacheLoaderMixin, self).__init__(*args, **kwargs)
@@ -304,12 +297,9 @@ class LoaderNamespace(Loader):
             try:
                 module = importlib.import_module(self._namespaces[namespace]) \
                     if isinstance(self._namespaces[namespace], str) else self._namespaces[namespace]
-                if '.' in classname:
-                    submodule, classname = classname.rsplit('.', 1)
-                    module = importlib.import_module('.' + submodule, module.__name__)
 
-                return getattr(module, classname)
-            except AttributeError:
+                return import_class(classname, module.__name__)
+            except (AttributeError, ImportError):
                 raise ImportError("Class '{0}' could not be loaded from namespace '{1}'.".format(classname,
                                                                                                  namespace))
         return super(LoaderNamespace, self).load_class(classname)
@@ -374,3 +364,19 @@ class LoaderNamespaceReversedCached(CacheLoaderNamespaceMixin, LoaderNamespaceRe
     Already looked up classes are cached.
     """
     pass
+
+
+def import_class(classpath, package=None):
+    """
+    Load and return a class
+    """
+    if '.' in classpath:
+        module, classname = classpath.rsplit('.', 1)
+        if package and not module.startswith('.'):
+            module = '.{0}'.format(module)
+        mod = import_module(module, package)
+    else:
+        classname = classpath
+        mod = import_module(package)
+
+    return getattr(mod, classname)

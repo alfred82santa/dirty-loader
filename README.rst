@@ -5,7 +5,7 @@
 
 .. |coverall-master| image:: https://coveralls.io/repos/alfred82santa/dirty-loader/badge.png?branch=master
     :target: https://coveralls.io/r/alfred82santa/dirty-loader?branch=master
-    
+
 .. |docs-master| image:: https://readthedocs.org/projects/dirty-loader/badge/?version=latest
     :target: https://readthedocs.org/projects/dirty-loader/?badge=latest
     :alt: Documentation Status
@@ -14,6 +14,17 @@ dirty-loader
 ============
 
 Easy to use loader library.
+
+---------
+Changelog
+---------
+
+Version 0.1.0
+-------------
+
+* Some refactors.
+* New function ``import_class``.
+
 
 -----------
 Instalation
