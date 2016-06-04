@@ -20,3 +20,11 @@ class FakeClass3:
     def __init__(self, var1=None, var2=None):
         self.var1 = var1
         self.var2 = var2
+
+
+class FakeClass4(FakeClass3):
+    pass
+
+
+class FakeClass5(FakeClass4):
+    pass

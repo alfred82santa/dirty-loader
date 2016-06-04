@@ -1,8 +1,6 @@
 Dirty Loader package
 ====================
 
-Main loaders
-
 Loaders
 -------
 
@@ -10,3 +8,12 @@ Loaders
     :members:
     :inherited-members:
     :show-inheritance:
+
+Factories
+---------
+
+.. automodule:: dirty_loader.factories
+    :members:
+    :inherited-members:
+    :show-inheritance:
+

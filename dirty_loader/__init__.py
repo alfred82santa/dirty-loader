@@ -26,7 +26,7 @@ class Loader:
     you want insert new module.
     """
 
-    def __init__(self, modules=None):
+    def __init__(self, modules=None, factories=None):
         """
         Loader initialitzer.
 
@@ -34,7 +34,8 @@ class Loader:
         :type modules: list
         """
 
-        self._modules = modules if modules is not None else []
+        self._modules = modules or []
+        self._factories = factories or {}
 
     def register_module(self, module, idx=-1):
         """
@@ -113,7 +114,31 @@ class Loader:
         """
 
         klass = self.load_class(classname)
-        return klass(*args, **kwargs)
+
+        return self.get_factory_by_class(klass)(*args, **kwargs)
+
+    def get_factory_by_class(self, klass):
+        """
+        Returns a custom factory for class. By default it will return the class itself.
+
+        :param klass: Class type
+        :type klass: type
+        :return: Class factory
+        :rtype: callable
+        """
+        for check, factory in self._factories.items():
+            if klass is check:
+                return factory(self, klass)
+        for check, factory in self._factories.items():
+            if issubclass(klass, check):
+                return factory(self, klass)
+        return klass
+
+    def register_factory(self, klass, factory):
+        self._factories[klass] = factory
+
+    def unregister_factory(self, klass):
+        del self._factories[klass]
 
 
 class ReversedMixin:
@@ -137,12 +162,19 @@ class CacheLoaderMixin:
     def __init__(self, *args, **kwargs):
         super(CacheLoaderMixin, self).__init__(*args, **kwargs)
         self._cache = {}
+        self._cache_factories = {}
 
     def invalidate_cache(self):
         """
         Invalidate class cache.
         """
         self._cache = {}
+
+    def invalidate_cache_factories(self):
+        """
+        Invalidate factories cache.
+        """
+        self._cache_factories = {}
 
     def register_module(self, *args, **kwargs):
         super(CacheLoaderMixin, self).register_module(*args, **kwargs)
@@ -164,6 +196,27 @@ class CacheLoaderMixin:
         if not avoid_cache:
             self._cache[classname] = result
         return result
+
+    def get_factory_by_class(self, klass, avoid_cache=False):
+        if not avoid_cache:
+            try:
+                return self._cache_factories[klass]
+            except KeyError:
+                pass
+
+        result = super(CacheLoaderMixin, self).get_factory_by_class(klass)
+
+        if not avoid_cache:
+            self._cache_factories[klass] = result
+        return result
+
+    def register_factory(self, klass, factory):
+        super(CacheLoaderMixin, self).register_factory(klass, factory)
+        self.invalidate_cache_factories()
+
+    def unregister_factory(self, klass):
+        super(CacheLoaderMixin, self).unregister_factory(klass)
+        self.invalidate_cache_factories()
 
 
 class LoaderCached(CacheLoaderMixin, Loader):
@@ -195,7 +248,7 @@ class LoaderNamespace(Loader):
     to look for classes. First namespace registered has preference in front last ones.
     """
 
-    def __init__(self, namespaces=None):
+    def __init__(self, namespaces=None, factories=None):
         """
         LoaderNamespace initialitzer.
 
@@ -203,7 +256,8 @@ class LoaderNamespace(Loader):
             Modules can be strings or module objects
         :type namespaces: OrderedDict
         """
-        self._namespaces = namespaces if namespaces is not None else OrderedDict()
+        self._namespaces = namespaces or OrderedDict()
+        self._factories = factories or {}
 
     def register_module(self, module, namespace=None):
         """
