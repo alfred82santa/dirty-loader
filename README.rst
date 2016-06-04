@@ -23,6 +23,7 @@ Version 0.2.0
 -------------
 
 - Custom factories for classes.
+- Default factories for logging package.
 
 Version 0.1.0
 -------------
