@@ -2,6 +2,7 @@ from collections import OrderedDict
 from unittest.case import TestCase
 from dirty_loader import Loader, NoRegisteredError, AlreadyRegisteredError, LoaderReversed, LoaderNamespace, \
     LoaderNamespaceReversed, LoaderCached, LoaderReversedCached, LoaderNamespaceReversedCached, LoaderNamespaceCached
+from dirty_loader.factories import BaseFactory
 
 __author__ = 'alfred'
 
@@ -118,6 +119,66 @@ class LoaderTest(TestCase):
         self.assertEquals(obj.var1, 'a')
         self.assertEquals(obj.var2, 2)
 
+    def test_custom_factories(self):
+        self.loader.register_module('tests.fake.namespace1')
+        self.loader.register_module('tests.fake.namespace2', idx=0)
+
+        from tests.fake.namespace1 import FakeClass3, FakeClass4, FakeClass5
+        from tests.fake.namespace2 import FakeClass1, FakeClass2
+
+        class FakeClassFactory(BaseFactory):
+
+            def __init__(self, *args, **kwargs):
+                super(FakeClassFactory, self).__init__(*args, **kwargs)
+                self.counter = 0
+
+            def __call__(self, var1, var2):
+                self.counter += 1
+                return super(FakeClassFactory, self).__call__(var1=var1 + "b",
+                                                              var2=var2 + self.counter)
+
+        self.loader.register_factory(FakeClass1, FakeClassFactory)
+
+        obj = self.loader.factory('FakeClass1', var1='a', var2=2)
+        self.assertIsInstance(obj, FakeClass1)
+        self.assertEquals(obj.var1, 'ab')
+        self.assertEquals(obj.var2, 3)
+
+        obj = self.loader.factory('FakeClass2')
+        self.assertIsInstance(obj, FakeClass2)
+        self.assertIsNone(obj.var1)
+        self.assertIsNone(obj.var2)
+
+        self.loader.register_factory(FakeClass3, FakeClassFactory)
+
+        obj = self.loader.factory('FakeClass3', var1='a', var2=2)
+        self.assertIsInstance(obj, FakeClass3)
+        self.assertEquals(obj.var1, 'ab')
+        self.assertEquals(obj.var2, 3)
+
+        obj = self.loader.factory('FakeClass4', var1='a', var2=2)
+        self.assertIsInstance(obj, FakeClass4)
+        self.assertEquals(obj.var1, 'ab')
+        self.assertEquals(obj.var2, 3)
+
+        class FakeClass5Factory(FakeClassFactory):
+            def __init__(self, *args, **kwargs):
+                super(FakeClass5Factory, self).__init__(*args, **kwargs)
+                self.counter = 5
+
+        self.loader.register_factory(FakeClass5, FakeClass5Factory)
+
+        obj = self.loader.factory('FakeClass5', var1='a', var2=2)
+        self.assertIsInstance(obj, FakeClass5)
+        self.assertEquals(obj.var1, 'ab')
+        self.assertEquals(obj.var2, 8)
+
+        self.loader.unregister_factory(FakeClass5)
+        obj = self.loader.factory('FakeClass5', var1='a', var2=2)
+        self.assertIsInstance(obj, FakeClass5)
+        self.assertEquals(obj.var1, 'ab')
+        self.assertEquals(obj.var2, 3)
+
 
 class LoaderReversedTest(TestCase):
 
@@ -187,6 +248,65 @@ class LoaderCachedTest(LoaderTest):
         self.loader.register_module('tests.fake.namespace2')
 
         self.assertEquals(self.loader._cache, {})
+
+    def test_custom_factories(self):
+        self.loader.register_module('tests.fake.namespace1')
+        self.loader.register_module('tests.fake.namespace2', idx=0)
+
+        from tests.fake.namespace1 import FakeClass3, FakeClass4, FakeClass5
+        from tests.fake.namespace2 import FakeClass1
+
+        class FakeClassFactory(BaseFactory):
+            def __init__(self, *args, **kwargs):
+                super(FakeClassFactory, self).__init__(*args, **kwargs)
+                self.counter = 0
+
+            def __call__(self, var1, var2):
+                self.counter += 1
+                return super(FakeClassFactory, self).__call__(var1=var1 + "b",
+                                                              var2=var2 + self.counter)
+
+        self.loader.register_factory(FakeClass1, FakeClassFactory)
+
+        obj = self.loader.factory('FakeClass1', var1='a', var2=2)
+        self.assertIsInstance(obj, FakeClass1)
+        self.assertEquals(obj.var1, 'ab')
+        self.assertEquals(obj.var2, 3)
+
+        obj = self.loader.factory('FakeClass1', var1='a', var2=2)
+        self.assertIsInstance(obj, FakeClass1)
+        self.assertEquals(obj.var1, 'ab')
+        self.assertEquals(obj.var2, 4)
+
+        self.loader.register_factory(FakeClass3, FakeClassFactory)
+
+        obj = self.loader.factory('FakeClass3', var1='a', var2=2)
+        self.assertIsInstance(obj, FakeClass3)
+        self.assertEquals(obj.var1, 'ab')
+        self.assertEquals(obj.var2, 3)
+
+        obj = self.loader.factory('FakeClass4', var1='a', var2=2)
+        self.assertIsInstance(obj, FakeClass4)
+        self.assertEquals(obj.var1, 'ab')
+        self.assertEquals(obj.var2, 3)
+
+        class FakeClass5Factory(FakeClassFactory):
+            def __init__(self, *args, **kwargs):
+                super(FakeClass5Factory, self).__init__(*args, **kwargs)
+                self.counter = 5
+
+        self.loader.register_factory(FakeClass5, FakeClass5Factory)
+
+        obj = self.loader.factory('FakeClass5', var1='a', var2=2)
+        self.assertIsInstance(obj, FakeClass5)
+        self.assertEquals(obj.var1, 'ab')
+        self.assertEquals(obj.var2, 8)
+
+        self.loader.unregister_factory(FakeClass5)
+        obj = self.loader.factory('FakeClass5', var1='a', var2=2)
+        self.assertIsInstance(obj, FakeClass5)
+        self.assertEquals(obj.var1, 'ab')
+        self.assertEquals(obj.var2, 3)
 
 
 class LoaderReversedCachedTest(LoaderReversedTest):
@@ -416,7 +536,7 @@ class LoaderNamespaceCachedTest(LoaderNamespaceTest):
 
         from tests.fake.namespace1 import FakeClass1
 
-        klass = self.loader.load_class('FakeClass1', namespace='fake1')
+        klass = self.loader.load_class('FakeClass1', namespace='fake1', avoid_cache=True)
         self.assertEquals(klass, FakeClass1)
         self.assertEquals(self.loader._cache, {})
 

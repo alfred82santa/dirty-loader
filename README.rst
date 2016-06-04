@@ -19,6 +19,11 @@ Easy to use loader library.
 Changelog
 ---------
 
+Version 0.2.0
+-------------
+
+- Custom factories for classes.
+
 Version 0.1.0
 -------------
 
