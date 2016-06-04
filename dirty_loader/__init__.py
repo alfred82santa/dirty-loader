@@ -219,8 +219,6 @@ class CacheLoaderMixin:
         self.invalidate_cache_factories()
 
 
-
-
 class LoaderCached(CacheLoaderMixin, Loader):
 
     """

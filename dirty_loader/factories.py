@@ -15,6 +15,9 @@ def instance_params(desc):
 
 
 class BaseFactory:
+    """
+    Base class factory. It should be used in order to implement specific ones.
+    """
 
     def __init__(self, loader, klass):
         self.loader = loader
@@ -38,6 +41,9 @@ class BaseLoggingFactory(BaseFactory):
 
 
 class LoggerFactory(BaseLoggingFactory):
+    """
+    Logger factory.
+    """
 
     def __call__(self, name, propagate=True, level=logging.DEBUG, handlers=None, filters=None):
         logger = logging.getLogger(name)
@@ -59,6 +65,9 @@ class LoggerFactory(BaseLoggingFactory):
 
 
 class LoggingHandlerFactory(BaseLoggingFactory):
+    """
+    Logger handle factory.
+    """
 
     def __call__(self, formatter=None, filters=None, *args, **kwargs):
         handler = self.klass(*args, **kwargs)
@@ -75,5 +84,10 @@ class LoggingHandlerFactory(BaseLoggingFactory):
 
 
 def register_logging_factories(loader):
+    """
+    Registers default factories for logging standard package.
+
+    :param loader: Loader where you want register default logging factories
+    """
     loader.register_factory(logging.Logger, LoggerFactory)
     loader.register_factory(logging.Handler, LoggingHandlerFactory)

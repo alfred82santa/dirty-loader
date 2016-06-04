@@ -162,6 +162,7 @@ class LoaderTest(TestCase):
         self.assertEquals(obj.var2, 3)
 
         class FakeClass5Factory(FakeClassFactory):
+
             def __init__(self, *args, **kwargs):
                 super(FakeClass5Factory, self).__init__(*args, **kwargs)
                 self.counter = 5
@@ -257,6 +258,7 @@ class LoaderCachedTest(LoaderTest):
         from tests.fake.namespace2 import FakeClass1
 
         class FakeClassFactory(BaseFactory):
+
             def __init__(self, *args, **kwargs):
                 super(FakeClassFactory, self).__init__(*args, **kwargs)
                 self.counter = 0
@@ -291,6 +293,7 @@ class LoaderCachedTest(LoaderTest):
         self.assertEquals(obj.var2, 3)
 
         class FakeClass5Factory(FakeClassFactory):
+
             def __init__(self, *args, **kwargs):
                 super(FakeClass5Factory, self).__init__(*args, **kwargs)
                 self.counter = 5

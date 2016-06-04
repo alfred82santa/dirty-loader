@@ -67,4 +67,3 @@ class LoggerFactoryTest(TestCase):
         self.assertEqual(logger, getLogger('foo.bar.test.2'))
         self.assertEqual(len(logger.handlers), 1)
         self.assertIsInstance(logger.handlers[0], NullHandler)
-
