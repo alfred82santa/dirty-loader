@@ -4,12 +4,15 @@ import logging
 def instance_params(desc):
     if isinstance(desc, str):
         return desc, {}
-
-    klass = desc['type']
     try:
-        params = desc['params']
+        klass = desc['type']
+        try:
+            params = desc['params']
+        except KeyError:
+            params = {}
     except KeyError:
-        params = {}
+        klass = list(desc.keys())[0]
+        params = desc.pop(klass)
 
     return klass, params
 

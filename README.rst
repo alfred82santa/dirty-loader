@@ -19,6 +19,12 @@ Easy to use loader library.
 Changelog
 ---------
 
+Version 0.2.1
+-------------
+
+- Three types of instance definition allowed: string, structured and structure simplified.
+
+
 Version 0.2.0
 -------------
 
