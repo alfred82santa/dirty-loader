@@ -1,7 +1,7 @@
 from logging import NullHandler, Filter, Formatter, getLogger
 from unittest.case import TestCase
 from dirty_loader import LoaderNamespace
-from dirty_loader.factories import register_logging_factories
+from dirty_loader.factories import register_logging_factories, instance_params
 
 __author__ = 'alfred'
 
@@ -67,3 +67,24 @@ class LoggerFactoryTest(TestCase):
         self.assertEqual(logger, getLogger('foo.bar.test.2'))
         self.assertEqual(len(logger.handlers), 1)
         self.assertIsInstance(logger.handlers[0], NullHandler)
+
+
+class InstanceParamsTest(TestCase):
+
+    def test_str(self):
+        klass, params = instance_params('fakeclass')
+        self.assertEqual(klass, 'fakeclass')
+        self.assertEqual(params, {})
+
+    def test_structured(self):
+        klass, params = instance_params({'type': 'fakeclass',
+                                         'params': {'param1': 'value1',
+                                                    'param2': 2}})
+        self.assertEqual(klass, 'fakeclass')
+        self.assertEqual(params, {'param1': 'value1', 'param2': 2})
+
+    def test_structured_simplified(self):
+        klass, params = instance_params({'fakeclass': {'param1': 'value1',
+                                                       'param2': 2}})
+        self.assertEqual(klass, 'fakeclass')
+        self.assertEqual(params, {'param1': 'value1', 'param2': 2})
