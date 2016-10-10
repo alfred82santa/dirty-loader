@@ -1,12 +1,12 @@
 from logging import NullHandler, Filter, Formatter, getLogger
 from unittest.case import TestCase
 from dirty_loader import LoaderNamespace
-from dirty_loader.factories import register_logging_factories, instance_params
+from dirty_loader.factories import register_logging_factories, instance_params, BaseFactory
 
 __author__ = 'alfred'
 
 
-class LoggingHandlerFactoryTest(TestCase):
+class LoggingHandlerFactoryTests(TestCase):
 
     def setUp(self):
         self.loader = LoaderNamespace()
@@ -51,7 +51,7 @@ class LoggingHandlerFactoryTest(TestCase):
         self.assertEqual(handler.formatter.datefmt, 'foo.bar')
 
 
-class LoggerFactoryTest(TestCase):
+class LoggerFactoryTests(TestCase):
 
     def setUp(self):
         self.loader = LoaderNamespace()
@@ -69,7 +69,7 @@ class LoggerFactoryTest(TestCase):
         self.assertIsInstance(logger.handlers[0], NullHandler)
 
 
-class InstanceParamsTest(TestCase):
+class InstanceParamsTests(TestCase):
 
     def test_str(self):
         klass, params = instance_params('fakeclass')
@@ -88,3 +88,42 @@ class InstanceParamsTest(TestCase):
                                                        'param2': 2}})
         self.assertEqual(klass, 'fakeclass')
         self.assertEqual(params, {'param1': 'value1', 'param2': 2})
+
+
+class BaseFactoryTests(TestCase):
+
+    def setUp(self):
+        self.loader = LoaderNamespace()
+        self.loader.register_namespace('logging', 'logging')
+        register_logging_factories(self.loader)
+
+    def test_iter_loaded_named_item_list(self):
+        factory = BaseFactory(self.loader, self.__class__)
+
+        result = dict(factory.iter_loaded_named_item_list({'handler': 'logging:NullHandler',
+                                                           'formatter': 'logging:Formatter'}))
+
+        self.assertEqual(len(result), 2)
+        self.assertIn('handler', result)
+        self.assertIsInstance(result['handler'], NullHandler)
+        self.assertIn('formatter', result)
+        self.assertIsInstance(result['formatter'], Formatter)
+
+    def test_iter_loaded_named_item_list_none(self):
+        factory = BaseFactory(self.loader, self.__class__)
+
+        result = dict(factory.iter_loaded_named_item_list(None))
+
+        self.assertEqual(len(result), 0)
+
+    def test_iter_loaded_item_list_none(self):
+        factory = BaseFactory(self.loader, self.__class__)
+
+        result = list(factory.iter_loaded_item_list(None))
+
+        self.assertEqual(len(result), 0)
+
+    def test_load_item(self):
+        factory = BaseFactory(self.loader, self.__class__)
+
+        self.assertEqual(factory.load_item('foobar', str), 'foobar')

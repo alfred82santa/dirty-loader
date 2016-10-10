@@ -5,7 +5,7 @@ setup(
     name='dirty-loader',
     url='https://github.com/alfred82santa/dirty-loader',
     author='alfred82santa',
-    version='0.2.1',
+    version='0.2.2',
     license='LGPLv2.1',
     author_email='alfred82santa@gmail.com',
     classifiers=[
@@ -15,7 +15,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5'],
     packages=['dirty_loader'],
-    include_package_data=True,
+    include_package_data=False,
     install_requires=[],
     description="Dirty loader for python 3",
     long_description=open(os.path.join(os.path.dirname(__file__), 'README.rst')).read(),

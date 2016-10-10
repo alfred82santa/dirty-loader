@@ -19,6 +19,12 @@ Easy to use loader library.
 Changelog
 ---------
 
+Version 0.2.2
+-------------
+
+- Simplified code.
+- Added BaseFactory methods to load items from list or dictionaries.
+
 Version 0.2.1
 -------------
 
@@ -50,7 +56,7 @@ Instalation
 Documentation
 -------------
 
-http://dirty-loader.readthedocs.org
+http://dirty-loader.readthedocs.io
 
 ------------
 Main loaders
