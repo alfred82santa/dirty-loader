@@ -29,18 +29,31 @@ class BaseFactory:
     def __call__(self, *args, **kwargs):
         return self.klass(*args, **kwargs)
 
+    def load_item(self, item, allowed_classes=tuple()):
+        if isinstance(item, allowed_classes):
+            return item
+        klass, params = instance_params(item)
+        return self.loader.factory(klass, **params)
+
+    def iter_loaded_item_list(self, item_list, allowed_classes=tuple()):
+        try:
+            for item in item_list:
+                yield self.load_item(item, allowed_classes)
+        except TypeError:
+            pass
+
+    def iter_loaded_named_item_list(self, item_list, allowed_classes=tuple()):
+        try:
+            for name, item in item_list.items():
+                yield name, self.load_item(item, allowed_classes)
+        except AttributeError:
+            pass
+
 
 class BaseLoggingFactory(BaseFactory):
 
     def add_filters(self, obj, filters):
-        try:
-            for f in filters:
-                if not isinstance(f, logging.Filter):
-                    klass, params = instance_params(f)
-                    f = self.loader.factory(klass, **params)
-                obj.addFilter(f)
-        except TypeError:
-            pass
+        list(map(obj.addFilter, self.iter_loaded_item_list(filters, logging.Filter)))
 
 
 class LoggerFactory(BaseLoggingFactory):
@@ -53,15 +66,7 @@ class LoggerFactory(BaseLoggingFactory):
         logger.propagate = propagate
         logger.setLevel(level)
 
-        try:
-            for handler in handlers:
-                if not isinstance(handler, logging.Handler):
-                    klass, params = instance_params(handler)
-                    handler = self.loader.factory(klass, **params)
-                logger.addHandler(handler)
-        except TypeError:
-            pass
-
+        list(map(logger.addHandler, self.iter_loaded_item_list(handlers, logging.Handler)))
         self.add_filters(logger, filters)
 
         return logger
@@ -76,10 +81,7 @@ class LoggingHandlerFactory(BaseLoggingFactory):
         handler = self.klass(*args, **kwargs)
 
         if formatter:
-            if not isinstance(formatter, logging.Formatter):
-                klass, params = instance_params(formatter)
-                formatter = self.loader.factory(klass, **params)
-            handler.setFormatter(formatter)
+            handler.setFormatter(self.load_item(formatter, logging.Formatter))
 
         self.add_filters(handler, filters)
 
